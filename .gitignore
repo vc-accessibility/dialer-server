@@ -1,1 +1,4 @@
 secrets.env
+gaccount.json
+*pem
+*key

@@ -1,7 +1,9 @@
 FROM fedora
 RUN dnf install -y node npm && \
     dnf clean all
-RUN npm install twilio
-#ADD src /opt/dialer-server
+RUN npm install --save twilio ws express @google-cloud/speech
+RUN npm install nodemon -g
+WORKDIR /opt/dialer-server
 VOLUME /opt/dialer-server
-CMD [ "/bin/bash" ]
+EXPOSE 8080
+ENTRYPOINT [ "nodemon", "server.js" ]

@@ -7,12 +7,14 @@ help:
 		@echo "make build-force - Use a no-cache build"
 		@echo "make run-int - Run the new image interactively"
 
-build: 
+build:
 		@podman build --file=$(OCI_FNAME) . -t $(IMAGE_NAME)
 
 build-force:
 		@podman build --file=$(OCI_FNAME) --no-cache . -t $(IMAGE_NAME)
 
 run-int:
-		@podman run --env-file secrets.env -v $(PWD)/src:/opt/dialer-server:z -it $(IMAGE_NAME) /bin/bash 
+		@podman run -it --env-file secrets.env -p 8080:8080 -v $(PWD)/src:/opt/dialer-server:z --entrypoint /bin/bash $(IMAGE_NAME)
 
+run:
+		@podman run -d --env-file secrets.env -p 8080:8080 -v $(PWD)/src:/opt/dialer-server:z $(IMAGE_NAME)

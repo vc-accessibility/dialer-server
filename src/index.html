@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Accessible Conference Calls</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+</head>
+
+<body>
+    <h1>Accessible Conference Calls</h1>
+    <p>
+        For many people, participating in conference calls is a challenge. They may
+        be hard of hearing or better at processing text then voice. With the significant
+        increase of people working from home, conference calling, while already prolific,
+        is becoming even more so. Both video conferencing and traditional voice conferencing
+        almost always provide a phone number to dial in to.
+
+        Some conference calling services provide real time closed captioning, but some don't.
+        This application is meant to:
+        <ul>
+            <li>bridge the gap for services that do not provide real time captioning</li>
+            <li>allow for privacy regarding your special needs (no one needs to
+                know you have captioning or need it)</li>
+        </ul>
+    </p>
+    <p id="dialer">
+        <form id="dial-form" action="dial" method="post">
+                Please enter the number you would like to call:
+                <input name="number" type="text" />
+                <input value="dial" type="submit" />
+        </form>
+    </p>
+    <p id="dialing-status" />
+    <p id="transcription-container"></p>
+    <script>
+        let socketTarget = `wss://${window.location.host}`;
+        document.addEventListener("DOMContentLoaded", (event) => {
+            webSocket = new WebSocket(socketTarget);
+            webSocket.onmessage = function (msg) {
+                const data = JSON.parse(msg.data);
+                if (data.event === "interim-transcription") {
+                    document.getElementById("transcription-container").innerHTML =
+                        data.text;
+                }
+            };
+        });
+
+        $(document).ready(function () {
+            $('#dial-form').submit( function (event) {
+                event.preventDefault();
+                var $form = $(this),
+                    url = $form.attr("action");
+                var posting = $.post(url, $form.serialize());
+                posting.done(function (data) {
+                    $("#dialing-status").empty().append(data);
+                });
+            });
+        });
+    //</script>
+</body>
+
+</html>
